@@ -35,7 +35,7 @@ def _validation(ti):  # Task Instance: 'ti'
     print(f"{cross_com}\nValidating\nLoading ...\n")
 
 
-with DAG(dag_id='my_first_dag',
+with DAG(dag_id='study',
          default_args=default_args,
          start_date=days_ago(5),  # days_ago(2)
          schedule_interval='@daily',  # None '@daily' '*/10 * * * *', '*/5 * * * *'
