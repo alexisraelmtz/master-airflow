@@ -4,6 +4,7 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.version import version
 from datetime import datetime, timedelta
+import os
 
 
 def my_custom_function(ts, **kwargs):
@@ -18,8 +19,10 @@ def my_custom_function(ts, **kwargs):
 
 
 # Default settings applied to all tasks
+owner = ((os.path.dirname(os.path.abspath(__file__)).split("/"))[-1]).upper()
+
 default_args = {
-    'owner': 'airflow',
+    'owner': owner,
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,

@@ -5,9 +5,13 @@ from airflow.sensors.filesystem import FileSensor
 from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
+import os
 
+
+owner = ((os.path.dirname(os.path.abspath(__file__)).split("/"))[-1]).upper()
 
 default_args = {
+    'owner': owner,
     'retries': 2,
     'retry_delay': timedelta(seconds=5)
     # 'email_on_failure': True
