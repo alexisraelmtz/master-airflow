@@ -5,6 +5,7 @@ from airflow.sensors.filesystem import FileSensor
 from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 from datetime import datetime, timedelta
+import include.view as sf
 import os
 
 
@@ -49,8 +50,13 @@ with DAG(dag_id='start',
         op_kwargs={'my_param': False}
     )
 
+    prompt_command = BashOperator(
+        task_id='prompt_command'
+        bash_command=f"{sf.my_var} -- The test was:\n{sf.my_var2}"
+    )
+
     # right big Shift >> Dependecies(edges in DAG)
-    init_task >> extract_data >> check_data
+    init_task >> extract_data >> check_data >> prompt_command
 
 
 # AIRFLOW__SMTP__SMTP_HOST=smtp.gmail.com
