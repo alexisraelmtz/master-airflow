@@ -11,7 +11,7 @@ import os
 owner = ((os.path.dirname(os.path.abspath(__file__)).split("/"))[-1]).upper()
 
 default_args = {
-    'owner': owner,
+    # 'owner': owner,
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
     # 'email_on_failure': True
@@ -28,17 +28,17 @@ def _extraction(my_param, ds, **kwargs):  # context
         print("\nOperation Sucessful - Exit Code 0.")
     else:
         print("Operation FAILED - Exit Code 1.")
-    return 10  # Value de lo que quieras
-    (f"{ds}\n - Inyected data to File")
+    return (f"{ds}\n - Inyected data to File")
 
 
 def _validation(ti):  # Task Instance: 'ti'
     cross_com = ti.xcom_pull(key='return_value', task_ids=['extract_data'])
     # cross_com= 10
-    print(f"{cross_com}\nValidating\nLoading ...\n")
+    print(f"{cross_com}\nValidating\nLoading ...\nExtraction from XCOM_Pull.")
 
 
 with DAG(dag_id='study',
+         tags=[owner],
          default_args=default_args,
          start_date=days_ago(5),  # days_ago(2)
          schedule_interval='@daily',  # None '@daily' '*/10 * * * *', '*/5 * * * *'
@@ -51,6 +51,13 @@ with DAG(dag_id='study',
         # email_on_failure= True
     )
 
+    
+    get_location = BashOperator(
+        task_id='get_location',
+        bash_command='pwd && ls -a'
+    )
+
+
     extract_data = PythonOperator(
         task_id='extract_data',
         python_callable=_extraction,
@@ -60,6 +67,11 @@ with DAG(dag_id='study',
     check_data = PythonOperator(
         task_id='check_data',
         python_callable=_validation
+    )
+    
+    check_location = BashOperator(
+        task_id='check_location',
+        bash_command='pwd && cd .. && pwd && ls -a'
     )
 
     test_file = FileSensor(
@@ -75,7 +87,7 @@ with DAG(dag_id='study',
     )
 
     # right big Shift -> Dependecies(edges in DAG)
-    init_task >> extract_data >> check_data >> test_file >> proccess_data
+    init_task >> get_location >> extract_data >> check_data >> check_location >> test_file >> proccess_data
 
     # proccess_data << test_file << check_data << extract_data << init_task
     # chain(init_task, extract_data, test_file, proccess_data)

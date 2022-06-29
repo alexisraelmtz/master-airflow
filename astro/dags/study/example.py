@@ -22,7 +22,7 @@ def my_custom_function(ts, **kwargs):
 owner = ((os.path.dirname(os.path.abspath(__file__)).split("/"))[-1]).upper()
 
 default_args = {
-    'owner': owner,
+    # 'owner': owner,
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,
@@ -32,6 +32,7 @@ default_args = {
 
 # Using a DAG context manager, you don't have to specify the dag property of each task
 with DAG('example',
+         tags=[owner],
          start_date=datetime(2019, 1, 1),
          max_active_runs=3,
          # https://airflow.apache.org/docs/stable/scheduler.html#dag-runs

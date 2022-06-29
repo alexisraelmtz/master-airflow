@@ -21,7 +21,7 @@ def report_failure(context):
 owner = ((os.path.dirname(os.path.abspath(__file__)).split("/"))[-1]).upper()
 
 default_args = {
-    'owner': owner,
+    # 'tags': [owner],
     'retries': 2,
     'retry_delay': timedelta(minutes=5),
     'email_on_failure': True,
@@ -32,6 +32,7 @@ default_args = {
 
 # Using a DAG context manager, you don't have to specify the dag property of each task
 with DAG(dag_id='email',
+         tags=[owner],
          start_date=datetime(2021, 12, 1),
          max_active_runs=3,
          schedule_interval=timedelta(minutes=30),
